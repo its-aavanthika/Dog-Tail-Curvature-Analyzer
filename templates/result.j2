@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tail Analysis Result</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    .result-section {
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .tail-info {
+      margin-bottom: 30px;
+    }
+
+    #tail-container {
+      position: relative;
+      width: fit-content;
+      margin-bottom: 30px;
+    }
+
+    #rotated-tail {
+      transition: transform 0.3s ease;
+      display: block;
+      max-width: 300px;
+      border: 2px solid #ccc;
+      box-shadow: 2px 2px 8px #aaa;
+    }
+
+    .message {
+      font-style: italic;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="result-section">
+    <h2>🐾 Tail Analysis Complete</h2>
+
+    <div class="tail-info">
+      <p><strong>Tail Curve Angle:</strong> {{ angle }}°</p>
+      <p><strong>Tail Straightness Score:</strong> {{ score }} / 100</p>
+      <p><strong>Horoscope:</strong> {{ horoscope }}</p>
+      <p><strong>Famous Dog Match:</strong> {{ dog_match }}</p>
+    </div>
+
+    <h3>🌀 Straighten the Tail (Good Luck!)</h3>
+    <div id="tail-container">
+      <img id="rotated-tail" src="{{ tail_path }}" alt="Tail Image">
+    </div>
+
+    <input type="range" min="-180" max="180" value="{{ default_rotation }}" oninput="rotateTail(this.value)">
+    <p class="message">Nice try. But some things can't be fixed.</p>
+  </div>
+
+  <script>
+    function rotateTail(angle) {
+      const tail = document.getElementById('rotated-tail');
+      tail.style.transform = `rotate(${angle}deg)`;
+    }
+  </script>
+</body>
+</html>
