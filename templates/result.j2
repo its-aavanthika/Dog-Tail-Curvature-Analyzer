@@ -1,52 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
   <title>Tail Analysis Result</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-    .container { max-width: 600px; margin: auto; }
-    .slider { margin: 20px 0; }
-    .message { font-weight: bold; color: #b22222; margin-top: 15px; }
-    img { max-width: 100%; border: 2px solid #333; border-radius: 8px; margin-bottom: 10px; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #fdfbfb, #ebedee);
+      text-align: center;
+      padding: 40px;
+      color: #333;
+    }
+    img {
+      max-width: 400px;
+      margin: 20px auto;
+      display: block;
+    }
+    .slider {
+      margin-top: 20px;
+    }
+    h2 {
+      margin-top: 30px;
+    }
+    .button {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 24px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🐶 Tail Analysis Result</h1>
-    <p><strong>Tail Curve Angle:</strong> {{ angle }}°</p>
-    <p><strong>Tail Straightness Score:</strong> {{ score }}/100</p>
-    <p><strong>Dog Horoscope:</strong> {{ horoscope }}</p>
-    <p><strong>Tail Match:</strong> {{ match }}</p>
+  <h1>Tail Curvature Analysis</h1>
+  <p><strong>Tail Angle:</strong> {{ angle }}°</p>
+  <p><strong>Tail Straightness Score:</strong> {{ score }}%</p>
+  <p><strong>Horoscope:</strong> {{ horoscope }}</p>
+  <p><strong>You most resemble:</strong> {{ match }}</p>
+  {% if extra_note %}
+  <p><em>{{ extra_note }}</em></p>
+  {% endif %}
 
-    <h3>Detected Tail:</h3>
-    <img id="rotated-tail" src="/static/tail.png" alt="Tail">
+  <h2>Use the Slider to straighten your dog's tail:</h2>
+  <img id="rotated-tail" src="/static/{{ tail_image }}" alt="Tail">
 
-    <div class="slider">
-      <label for="angle-slider">Try straightening the tail:</label><br>
-      <input type="range" id="angle-slider" min="-180" max="180" value="{{ angle }}" oninput="rotateTail(this.value)">
-    </div>
-
-    <p id="slider-msg" class="message" style="display: none;">
-      Nice try. But some things can't be fixed.
-    </p>
-
-    <form action="/certificate">
-      <button type="submit">📄 Download Certificate</button>
-    </form>
+  <div class="slider">
+    <input type="range" min="-90" max="90" value="0" id="rotationSlider">
+    <p id="sliderText" style="margin-top: 10px; font-style: italic;"></p>
   </div>
 
-  <script>
-    let hasSlid = false;
-    function rotateTail(angle) {
-      const tail = document.getElementById('rotated-tail');
-      tail.style.transform = `rotate(${angle}deg)`;
+  <a class="button" href="/certificate/{{ certificate_image }}">Download Certificate</a>
 
-      if (!hasSlid) {
-        document.getElementById('slider-msg').style.display = 'block';
-        hasSlid = true;
+  <script>
+    const slider = document.getElementById('rotationSlider');
+    const tailImage = document.getElementById('rotated-tail');
+    const text = document.getElementById('sliderText');
+    let rotated = false;
+
+    slider.addEventListener('input', () => {
+      const angle = slider.value;
+      tailImage.style.transform = `rotate(${angle}deg)`;
+
+      if (!rotated && angle != 0) {
+        text.innerText = "Nice try. But some things can’t be fixed.";
+        rotated = true;
       }
-    }
+    });
   </script>
 </body>
 </html>

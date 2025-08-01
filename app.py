@@ -1,13 +1,14 @@
 # app.py
 import os
-from flask import Flask, render_template, request, send_file, jsonify
+import time
+from flask import Flask, render_template, request, send_file
 from utils import analyze_tail_angle, generate_tail_score
 from PIL import Image, ImageDraw, ImageFont
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
-TAIL_PATH = os.path.join('static', 'tail.png')
-CERTIFICATE_PATH = os.path.join('static', 'certificate.png')
+STATIC_FOLDER = 'static'
+CERTIFICATE_TEMPLATE = os.path.join(STATIC_FOLDER, 'certificate.png')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/')
@@ -16,14 +17,23 @@ def index():
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
-    file = request.files['dogImage']
-    filepath = os.path.join(UPLOAD_FOLDER, file.filename)
-    file.save(filepath)
+    # 🧹 Clean previous uploads
+    for f in os.listdir(UPLOAD_FOLDER):
+        os.remove(os.path.join(UPLOAD_FOLDER, f))
+    print("🧹 Cleaned uploads folder.")
 
+    # 📥 Save the new image
+    file = request.files['dogImage']
+    filename = file.filename or f"tail_{int(time.time())}.png"
+    filepath = os.path.join(UPLOAD_FOLDER, filename)
+    file.save(filepath)
+    print(f"✅ Saving: {filename}")
+
+    # 🧠 Analyze it
     angle = analyze_tail_angle(filepath)
     score = generate_tail_score(angle)
 
-    # Fake horoscope and dog match logic
+    # 🐶 Fun stuff
     horoscopes = [
         "This tail holds secrets of chaos.",
         "A future of chasing things awaits.",
@@ -33,33 +43,45 @@ def analyze():
     ]
     matches = [
         "Scooby Doo",
-        "Courage the Cowardly Dog",
-        "Pluto",
+        "Arjun from CID Moosa",
+        "Pluto from Mickey Mouse",
         "Bolt",
-        "Santa’s Little Helper"
+        "Laika"
     ]
 
-    horoscope = horoscopes[hash(file.filename) % len(horoscopes)]
-    match = matches[hash(file.filename[::-1]) % len(matches)]
+    horoscope = horoscopes[hash(filename) % len(horoscopes)]
+    match = matches[hash(filename[::-1]) % len(matches)]
 
-    return render_template('result.j2', angle=round(angle, 2), score=score,
-                           horoscope=horoscope, match=match)
+    # 🥚 Easter eggs
+    extra_note = ""
+    if 68 <= angle <= 70:
+        extra_note = "Nice. Very nice."
+    elif angle > 135:
+        extra_note = "This is basically a spiral. Time traveler confirmed."
+    elif match == "Pluto from Mickey Mouse":
+        extra_note = "Did you know Pluto isn't a planet anymore?"
 
-@app.route('/crop-tail', methods=['POST'])
-def crop_tail():
-    file = request.files['image']
-    filepath = os.path.join(UPLOAD_FOLDER, file.filename)
-    file.save(filepath)
+    # 🖼️ Save a copy to static folder
+    static_tail_path = os.path.join(STATIC_FOLDER, filename)
+    Image.open(filepath).save(static_tail_path)
 
-@app.route('/certificate')
-def certificate():
-    cert = Image.open(CERTIFICATE_PATH).convert('RGB')
+    # 🪪 Generate new certificate each time
+    cert = Image.open(CERTIFICATE_TEMPLATE).convert('RGB')
     draw = ImageDraw.Draw(cert)
     font = ImageFont.load_default()
     draw.text((100, 100), "Certified Tail Curve Analyzer!", fill=(0, 0, 0), font=font)
-    cert_path = os.path.join('static', 'generated_certificate.png')
+    cert_filename = f"certificate_{int(time.time())}.png"
+    cert_path = os.path.join(STATIC_FOLDER, cert_filename)
     cert.save(cert_path)
-    return send_file(cert_path, as_attachment=True)
+
+    return render_template('result.j2', angle=round(angle, 2), score=score,
+                           horoscope=horoscope, match=match,
+                           tail_image=filename, certificate_image=cert_filename,
+                           extra_note=extra_note)
+
+@app.route('/certificate/<filename>')
+def certificate(filename):
+    return send_file(os.path.join(STATIC_FOLDER, filename), as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)

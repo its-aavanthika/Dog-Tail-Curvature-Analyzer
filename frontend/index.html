@@ -6,7 +6,7 @@
   <link href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet">
   <style>
     body { font-family: sans-serif; text-align: center; padding: 20px; }
-    #preview { max-width: 100%; margin-top: 10px; }
+    #previewCanvas { max-width: 100%; margin-top: 10px; }
     .controls { margin-top: 20px; }
   </style>
 </head>
@@ -19,7 +19,6 @@
   <div class="controls">
     <button onclick="analyzeCroppedTail()">Analyze Tail</button>
   </div>
-   
 
   <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
   <script>
@@ -51,32 +50,14 @@
       reader.readAsDataURL(file);
     });
 
-    function uploadCroppedTail() {
-      if (!cropper) return alert("Please crop the image first.");
-
-      const croppedCanvas = cropper.getCroppedCanvas();
-      croppedCanvas.toBlob(blob => {
-        const formData = new FormData();
-        formData.append('image', blob, 'cropped_tail.png');
-
-        fetch('/crop-tail', {
-          method: 'POST',
-          body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-          alert(data.message || "Upload complete!");
-        });
-      });
-    }
-
     function analyzeCroppedTail() {
       if (!cropper) return alert("Please crop the image first.");
 
       const croppedCanvas = cropper.getCroppedCanvas();
       croppedCanvas.toBlob(blob => {
+        const uniqueFilename = 'tail_' + Date.now() + '.png';
         const formData = new FormData();
-        formData.append('dogImage', blob, 'cropped_tail.png');
+        formData.append('dogImage', blob, uniqueFilename);
 
         fetch('/analyze', {
           method: 'POST',
@@ -88,8 +69,8 @@
           document.write(html);
           document.close();
         });
-    });
-  }
+      });
+    }
   </script>
 </body>
 </html>
