@@ -1,9 +1,6 @@
- # app.py
 import os
-import base64
-from io import BytesIO
 from flask import Flask, render_template, request, send_file
-from utils import extract_tail_region, generate_tail_score
+from utils import analyze_tail_angle, generate_tail_score
 from PIL import Image, ImageDraw, ImageFont
 
 app = Flask(__name__)
@@ -16,17 +13,16 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def index():
     return open('frontend/index.html', encoding='utf-8').read()
 
-@app.route('/crop_tail', methods=['POST'])
-def crop_tail():
-    data_url = request.form['croppedImage']
-    header, encoded = data_url.split(",", 1)
-    binary_data = base64.b64decode(encoded)
-    image = Image.open(BytesIO(binary_data)).convert('RGB')
-    image.save(TAIL_PATH)
+@app.route('/analyze', methods=['POST'])
+def analyze():
+    file = request.files['dogImage']
+    filepath = os.path.join(UPLOAD_FOLDER, file.filename)
+    file.save(filepath)
 
-    angle = extract_tail_region(TAIL_PATH, TAIL_PATH)
+    angle = analyze_tail_angle(filepath)
     score = generate_tail_score(angle)
 
+    # Fake horoscope and dog match logic
     horoscopes = [
         "This tail holds secrets of chaos.",
         "A future of chasing things awaits.",
@@ -42,8 +38,8 @@ def crop_tail():
         "Santa’s Little Helper"
     ]
 
-    horoscope = horoscopes[hash(encoded) % len(horoscopes)]
-    match = matches[hash(encoded[::-1]) % len(matches)]
+    horoscope = horoscopes[hash(file.filename) % len(horoscopes)]
+    match = matches[hash(file.filename[::-1]) % len(matches)]
 
     return render_template('result.j2', angle=round(angle, 2), score=score,
                            horoscope=horoscope, match=match)
