@@ -1,5 +1,6 @@
+# app.py
 import os
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, send_file, jsonify
 from utils import analyze_tail_angle, generate_tail_score
 from PIL import Image, ImageDraw, ImageFont
 
@@ -43,6 +44,12 @@ def analyze():
 
     return render_template('result.j2', angle=round(angle, 2), score=score,
                            horoscope=horoscope, match=match)
+
+@app.route('/crop-tail', methods=['POST'])
+def crop_tail():
+    file = request.files['image']
+    filepath = os.path.join(UPLOAD_FOLDER, file.filename)
+    file.save(filepath)
 
 @app.route('/certificate')
 def certificate():
