@@ -11,7 +11,8 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/')
 def index():
-    return open('frontend/index.html', encoding='utf-8').read()
+    return "<h1>Flask is working!</h1>"
+
 
 @app.route('/analyze', methods=['POST'])
 def analyze():

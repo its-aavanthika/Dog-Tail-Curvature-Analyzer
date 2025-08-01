@@ -2,82 +2,229 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Dog Tail Curvature Analyzer</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dog Tail Analyzer 🐶</title>
+
+  <!-- Font Awesome for cute icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet">
+
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 20px; }
-    #preview { max-width: 100%; margin-top: 10px; }
-    .controls { margin-top: 20px; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #ffe7ba, #fff4e6);
+      color: #333;
+      scroll-behavior: smooth;
+    }
+
+    header {
+      text-align: center;
+      padding: 80px 20px 40px;
+      background-color: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(4px);
+      border-bottom: 2px solid #ffdaa2;
+    }
+
+    h1 {
+      font-size: 2.8em;
+      color: #f57f17;
+    }
+
+    section {
+      padding: 60px 20px;
+      max-width: 800px;
+      margin: auto;
+      text-align: center;
+      border-radius: 16px;
+      margin-bottom: 40px;
+      background: white;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.8s ease-out;
+    }
+
+    section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    h2 {
+      font-size: 1.8em;
+      color: #f57f17;
+      margin-bottom: 20px;
+    }
+
+    .icon {
+      font-size: 1.2em;
+      margin-right: 8px;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      margin-top: 10px;
+    }
+
+    .glow-button {
+      background: linear-gradient(45deg, #f57f17, #fbc02d);
+      border: none;
+      color: white;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 10px;
+      margin-top: 20px;
+      box-shadow: 0 0 15px #ffd54f;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .glow-button:hover {
+      transform: scale(1.05);
+    }
+
+    canvas {
+      max-width: 100%;
+      margin-top: 20px;
+      border-radius: 12px;
+    }
+
+    #sliderContainer {
+      margin-top: 30px;
+    }
+
+    #rotationSlider {
+      width: 300px;
+    }
+
+    #sliderText {
+      margin-top: 10px;
+      font-style: italic;
+      color: #f57f17;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      font-size: 14px;
+      color: #777;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2em;
+      }
+      h2 {
+        font-size: 1.4em;
+      }
+      section {
+        margin: 20px;
+        padding: 40px 20px;
+      }
+      #rotationSlider {
+        width: 90%;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <h1>🐕 Dog Tail Curvature Analyzer</h1>
+  <header>
+    <h1>🐾 Dog Tail Analyzer</h1>
+    <p>Upload your pup’s photo and discover its tail magic ✨</p>
+  </header>
 
-  <form id="uploadForm">
-    <input type="file" id="dogImage" accept="image/*" required><br><br>
-    <button type="submit">Upload</button>
-  </form>
+  <section class="fade-in">
+    <h2><i class="fa-solid fa-paw icon"></i>Upload Your Dog's Image</h2>
+    <input type="file" id="dogImageInput" accept="image/*">
+    <br/>
+    <canvas id="previewCanvas"></canvas>
+    <div id="sliderContainer">
+      <input type="range" min="-90" max="90" value="0" id="rotationSlider">
+      <p id="sliderText"></p>
+    </div>
+    <br/>
+    <button class="glow-button" onclick="analyzeCroppedTail()">Analyze Tail</button>
+  </section>
 
-  <div class="controls" style="display:none;" id="cropControls">
-    <canvas id="canvas" style="display:none;"></canvas>
-    <img id="preview" />
-    <br>
-    <button id="cropBtn">Crop Tail ➤ Analyze</button>
-  </div>
+  <footer>
+    🐶 Made with tail wags & smiles by Arsha 💛
+  </footer>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
   <script>
-    const dogImage = document.getElementById('dogImage');
-    const preview = document.getElementById('preview');
-    const canvas = document.getElementById('canvas');
-    const cropControls = document.getElementById('cropControls');
     let cropper;
+    const input = document.getElementById('dogImageInput');
+    const canvas = document.getElementById('previewCanvas');
+    const ctx = canvas.getContext('2d');
+    let imageElement = new Image();
+    let rotated = false;
 
-    document.getElementById('uploadForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const file = dogImage.files[0];
-      if (!file) return;
-
+    input.addEventListener('change', (event) => {
+      const file = event.target.files[0];
       const reader = new FileReader();
-      reader.onload = function (e) {
-        preview.src = e.target.result;
-        cropControls.style.display = 'block';
 
-        preview.onload = function () {
+      reader.onload = () => {
+        imageElement.src = reader.result;
+        imageElement.onload = () => {
+          canvas.width = imageElement.width;
+          canvas.height = imageElement.height;
+          ctx.drawImage(imageElement, 0, 0);
+
           if (cropper) cropper.destroy();
-          cropper = new Cropper(preview, {
-            aspectRatio: 1.5,
-            viewMode: 1,
+          cropper = new Cropper(canvas, {
+            aspectRatio: NaN,
+            viewMode: 1
           });
         };
       };
+
       reader.readAsDataURL(file);
     });
 
-    document.getElementById('cropBtn').addEventListener('click', function () {
-      if (!cropper) return;
-      const croppedCanvas = cropper.getCroppedCanvas({
-        width: 300,
-        height: 200,
-      });
+    function analyzeCroppedTail() {
+      if (!cropper) return alert("Please crop the image first.");
 
+      const croppedCanvas = cropper.getCroppedCanvas();
       croppedCanvas.toBlob(blob => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64data = reader.result;
+        const uniqueFilename = 'tail_' + Date.now() + '.png';
+        const formData = new FormData();
+        formData.append('dogImage', blob, uniqueFilename);
 
-          const formData = new FormData();
-          formData.append('croppedImage', base64data);
+        fetch('/analyze', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.text())
+        .then(html => {
+          document.open();
+          document.write(html);
+          document.close();
+        });
+      });
+    }
 
-          fetch('/crop_tail', {
-            method: 'POST',
-            body: formData
-          })
-          .then(res => res.text())
-          .then(html => document.write(html));
-        };
-        reader.readAsDataURL(blob);
-      }, 'image/png');
+    const slider = document.getElementById('rotationSlider');
+    const text = document.getElementById('sliderText');
+    slider.addEventListener('input', () => {
+      const angle = slider.value;
+      canvas.style.transform = 'rotate(${angle}deg)';
+      if (!rotated && angle != 0) {
+        text.innerText = "Nice try. But some things can’t be fixed.";
+        rotated = true;
+      }
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    });
+
+    document.querySelectorAll('.fade-in').forEach(section => {
+      observer.observe(section);
     });
   </script>
 </body>
