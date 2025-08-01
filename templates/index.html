@@ -3,38 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <title>Dog Tail Curvature Analyzer</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet">
   <style>
     body { font-family: sans-serif; text-align: center; padding: 20px; }
-    #preview { max-width: 100%; margin-top: 10px; }
+    #previewCanvas { max-width: 100%; margin-top: 10px; }
     .controls { margin-top: 20px; }
   </style>
 </head>
-
 <body>
-  <h1>🐕 Dog Tail Curvature Analyzer</h1>
+  <h1>Dog Tail Curvature Analyzer</h1>
 
-  <form id="uploadForm">
-    <input type="file" id="dogImage" accept="image/*" required><br><br>
-    <button type="submit">Upload</button>
-  </form>
+  <input type="file" id="dogImageInput" accept="image/*"><br>
+  <canvas id="previewCanvas" style="max-width:100%; margin-top: 10px;"></canvas>
 
-  <div class="controls" style="display:none;" id="cropControls">
-    <canvas id="canvas" style="display:none;"></canvas>
-    <img id="preview" />
-    <br>
-    <button id="cropBtn">Crop Tail ➤ Analyze</button>
+  <div class="controls">
+    <button onclick="analyzeCroppedTail()">Analyze Tail</button>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
   <script>
     let cropper;
+    const input = document.getElementById('dogImageInput');
+    const canvas = document.getElementById('previewCanvas');
+    const ctx = canvas.getContext('2d');
+    let imageElement = new Image();
 
-    document.getElementById('uploadForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const file = dogImage.files[0];
-      if (!file) return;
-
+    input.addEventListener('change', (event) => {
+      const file = event.target.files[0];
       const reader = new FileReader();
 
       reader.onload = () => {
@@ -45,8 +40,8 @@
           ctx.drawImage(imageElement, 0, 0);
 
           if (cropper) cropper.destroy();
-          cropper = new Cropper(preview, {
-            aspectRatio: 1.5,
+          cropper = new Cropper(canvas, {
+            aspectRatio: NaN,
             viewMode: 1,
           });
         };
@@ -64,16 +59,18 @@
         const formData = new FormData();
         formData.append('dogImage', blob, uniqueFilename);
 
-          fetch('/crop_tail', {
-            method: 'POST',
-            body: formData
-          })
-          .then(res => res.text())
-          .then(html => document.write(html));
-        };
-        reader.readAsDataURL(blob);
-      }, 'image/png');
-    });
+        fetch('/analyze', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.text())
+        .then(html => {
+          document.open();
+          document.write(html);
+          document.close();
+        });
+      });
+    }
   </script>
 </body>
 </html>

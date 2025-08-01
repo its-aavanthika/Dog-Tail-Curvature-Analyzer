@@ -1,19 +1,19 @@
-# app.py
 import os
 import time
 from flask import Flask, render_template, request, send_file
 from utils import analyze_tail_angle, generate_tail_score
 from PIL import Image, ImageDraw, ImageFont
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
+
 UPLOAD_FOLDER = 'uploads'
 STATIC_FOLDER = 'static'
-CERTIFICATE_TEMPLATE = os.path.join(STATIC_FOLDER, 'certificate.png')
+CERTIFICATE_TEMPLATE = os.path.join(STATIC_FOLDER, 'certificate_template.png')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/')
 def index():
-    return "<h1>Flask is working!</h1>"
+    return render_template('index.html')
 
 
 @app.route('/analyze', methods=['POST'])
@@ -66,14 +66,25 @@ def analyze():
     static_tail_path = os.path.join(STATIC_FOLDER, filename)
     Image.open(filepath).save(static_tail_path)
 
-    # 🪪 Generate new certificate each time
+    # 🪪 Generate new certificate each time from clean template
     cert = Image.open(CERTIFICATE_TEMPLATE).convert('RGB')
     draw = ImageDraw.Draw(cert)
     font = ImageFont.load_default()
+
+    # Dynamically write details
     draw.text((100, 100), "Certified Tail Curve Analyzer!", fill=(0, 0, 0), font=font)
-    cert_filename = f"certificate_{int(time.time())}.png"
+    draw.text((100, 130), f"Tail Angle: {round(angle, 2)}°", fill=(0, 0, 0), font=font)
+    draw.text((100, 160), f"Tail Score: {score}%", fill=(0, 0, 0), font=font)
+    draw.text((100, 190), f"Horoscope: {horoscope}", fill=(0, 0, 0), font=font)
+    draw.text((100, 220), f"Dog Match: {match}", fill=(0, 0, 0), font=font)
+    draw.text((100, 250), f"Issued: {time.strftime('%Y-%m-%d %H:%M:%S')}", fill=(0, 0, 0), font=font)
+
+    # Unique filename
+    cert_filename = f"certificate_{int(time.time() * 1000)}.png"
     cert_path = os.path.join(STATIC_FOLDER, cert_filename)
     cert.save(cert_path)
+
+
 
     return render_template('result.j2', angle=round(angle, 2), score=score,
                            horoscope=horoscope, match=match,

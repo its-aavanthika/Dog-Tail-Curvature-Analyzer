@@ -46,14 +46,18 @@
   {% endif %}
 
   <h2>Use the Slider to straighten your dog's tail:</h2>
-  <img id="rotated-tail" src="/static/{{ tail_image }}" alt="Tail">
+  <img id="rotated-tail" src="/static/{{ tail_image }}?v={{ tail_image }}" alt="Tail">
 
   <div class="slider">
     <input type="range" min="-90" max="90" value="0" id="rotationSlider">
     <p id="sliderText" style="margin-top: 10px; font-style: italic;"></p>
   </div>
 
-  <a class="button" href="/certificate/{{ certificate_image }}">Download Certificate</a>
+  <a class="button" href="/certificate/{{ certificate_image }}?v={{ certificate_image }}">Download Certificate</a>
+
+  <h2>Generated Certificate:</h2>
+  <img src="/static/{{ certificate_image }}?v={{ certificate_image }}" alt="Certificate">
+
 
   <script>
     const slider = document.getElementById('rotationSlider');
