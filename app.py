@@ -69,7 +69,8 @@ def analyze():
     # 🪪 Generate new certificate each time from clean template
     cert = Image.open(CERTIFICATE_TEMPLATE).convert('RGB')
     draw = ImageDraw.Draw(cert)
-    font = ImageFont.truetype("arial.ttf", size=36)  # increase size here
+    font_path = os.path.join("fonts", "arial.ttf")
+    font = ImageFont.truetype(font_path, size=36)
 
     def draw_bold_text(draw, position, text, font, fill=(0, 0, 0)):
         x, y = position
