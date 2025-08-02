@@ -16,10 +16,10 @@
 Our project Wag-O-Meter lets users upload a photo of their dog, manually crop the tail, and receive a “Tail Curvature Angle” and “Tail Straightness Score” based on image analysis using OpenCV. Our website also generates a fun dog horoscope, matches the dog to a famous canine character, and provides a certificate for download.
 
 ### The Problem (that doesn't exist)
-You probably can't describe how much it hurts when something that you do displeases someone and they say "അല്ലേലും പട്ടിയുടെ വാല് പന്തീരാണ്ടു കുഴലിലിട്ടാലും വളഞ്ഞേ ഇരിക്കൂ" which basically implies “No matter how long you try to straighten a dog’s tail, it’ll always stay curved.” But, what if we stopped arguing and just... measured it? Everybody tells you that a dog's tail stays curved, but nobody told you how to calculate the tail's degree of curvature. Well, no worries - our website does it for you!
+You probably can't describe how much it hurts when something that you do displeases someone and they say "അല്ലേലും പട്ടിയുടെ വാല് പന്തീരാണ്ടു കുഴലിലിട്ടാലും വളഞ്ഞേ ഇരിക്കൂ" which basically implies “No matter how long you try to straighten a dog’s tail, it’ll always stay curved.” But, what if we stopped arguing and just... measured it? Everybody tells you that a dog's tail stays curved, but nobody tells you how to calculate the tail's degree of curvature. Well, no worries - our website does it for you!
 
 ### The Solution (that nobody asked for)
-Wag-O-Meter - Dog Tail Curvature Analyzer, is a gloriously unnecessary website where you upload a dog photo, crop the tail, and let OpenCV calculate just how crooked it is. You’ll get a Tail Curvature Angle, Tail Straightness Score, a totally made-up dog horoscope, an extra note if you're lucky enough and a certificate to prove your tail has been scientifically analyzed (for no reason at all).
+Wag-O-Meter - Dog Tail Curvature Analyzer, is a gloriously unnecessary website where you upload a dog photo, crop the tail, and let OpenCV calculate just how crooked it is. You’ll get a Tail Curvature Angle, Tail Straightness Score, a totally made-up dog horoscope, an extra note if you're lucky enough and a certificate to prove your tail has been scientifically analyzed (for no reason at all). Plus, there is an interactive slider for the user to 'straighten' the dog's tail. Umm, all the best using that!
 
 ## Technical Details
 ### Technologies/Components Used
