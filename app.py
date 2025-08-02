@@ -69,15 +69,23 @@ def analyze():
     # 🪪 Generate new certificate each time from clean template
     cert = Image.open(CERTIFICATE_TEMPLATE).convert('RGB')
     draw = ImageDraw.Draw(cert)
-    font = ImageFont.load_default()
+    font = ImageFont.truetype("arial.ttf", size=36)  # increase size here
 
-    # Dynamically write details
-    draw.text((100, 100), "Certified Tail Curve Analyzer!", fill=(0, 0, 0), font=font)
-    draw.text((100, 130), f"Tail Angle: {round(angle, 2)}°", fill=(0, 0, 0), font=font)
-    draw.text((100, 160), f"Tail Score: {score}%", fill=(0, 0, 0), font=font)
-    draw.text((100, 190), f"Horoscope: {horoscope}", fill=(0, 0, 0), font=font)
-    draw.text((100, 220), f"Dog Match: {match}", fill=(0, 0, 0), font=font)
-    draw.text((100, 250), f"Issued: {time.strftime('%Y-%m-%d %H:%M:%S')}", fill=(0, 0, 0), font=font)
+    def draw_bold_text(draw, position, text, font, fill=(0, 0, 0)):
+        x, y = position
+        for dx, dy in [(0, 0), (1, 1), (-1, -1)]:
+            draw.text((x + dx, y + dy), text, font=font, fill=fill)
+
+
+    # Nicely spaced and lighter bold text
+    draw_bold_text(draw, (70, 150), "Certified Tail Curve Analyzer!", font)
+    draw_bold_text(draw, (70, 190), f"Tail Angle: {round(angle, 2)}°", font)
+    draw_bold_text(draw, (70, 230), f"Tail Score: {score}%", font)
+    draw_bold_text(draw, (70, 270), f"Horoscope: {horoscope}", font)
+    draw_bold_text(draw, (70, 310), f"Dog Match: {match}", font)
+    draw_bold_text(draw, (70, 350), f"Issued: {time.strftime('%Y-%m-%d %H:%M:%S')}", font)
+
+
 
     # Unique filename
     cert_filename = f"certificate_{int(time.time() * 1000)}.png"

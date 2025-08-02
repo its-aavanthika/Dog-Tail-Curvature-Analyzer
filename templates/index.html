@@ -2,19 +2,86 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Dog Tail Curvature Analyzer</title>
+  <title>🐾 Dog Tail Curvature Analyzer</title>
   <link href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 20px; }
-    #previewCanvas { max-width: 100%; margin-top: 10px; }
-    .controls { margin-top: 20px; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      text-align: center;
+      padding: 30px;
+      margin: 0;
+      background: linear-gradient(to bottom right, #fffaf0, #fdf7e2);
+      color: #333;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: #d17b0f;
+    }
+
+    h1::before {
+      content: "🐶 ";
+    }
+
+    #dogImageInput {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-top: 20px;
+      font-size: 1rem;
+    }
+
+    #previewCanvas {
+      max-width: 100%;
+      margin-top: 20px;
+      border-radius: 12px;
+      border: 2px dashed #f0c674;
+      background-color: #fff;
+    }
+
+    .controls {
+      margin-top: 30px;
+    }
+
+    button {
+      background: linear-gradient(to right, #ffb347, #ffcc33);
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #fff;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 0.9rem;
+      color: #888;
+    }
+
+    .paw {
+      color: #ffae42;
+      margin: 0 5px;
+    }
   </style>
 </head>
 <body>
-  <h1>Dog Tail Curvature Analyzer</h1>
+
+  <h1>Wag-O-Meter</h1>
+  <p><i class="fa-solid fa-paw paw"></i> Upload your dog’s image and analyze its tail curvature! <i class="fa-solid fa-paw paw"></i></p>
 
   <input type="file" id="dogImageInput" accept="image/*"><br>
-  <canvas id="previewCanvas" style="max-width:100%; margin-top: 10px;"></canvas>
+  <canvas id="previewCanvas"></canvas>
 
   <div class="controls">
     <button onclick="analyzeCroppedTail()">Analyze Tail</button>
