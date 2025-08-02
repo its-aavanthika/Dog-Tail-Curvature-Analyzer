@@ -105,7 +105,7 @@ This the workflow of the project
 ### Project Demo
 # Video
 
-<video controls src="WhatsApp Video 2025-08-02 at 07.50.47.mp4" title="Title"></video
+https://drive.google.com/drive/folders/1ngMgWaur_yPdvEwPVUvaW5tFSrBLIqmF
 The video basically displays how our website works.
 
 
