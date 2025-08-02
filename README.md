@@ -71,7 +71,7 @@ Implementation Overview:
 
 8. Deployment:
 
-*  Deployed in Render
+*  Deployed in Render.
 
 # Installation
 
@@ -100,7 +100,7 @@ The Tail Curvature Analysis Page
 # Diagrams
 
 ![Workflow]![alt text](<WhatsApp Image 2025-08-02 at 07.40.07 (1).jpeg>)
-This the workflow of the project
+This is the workflow of the project.
 
 ### Project Demo
 # Video
